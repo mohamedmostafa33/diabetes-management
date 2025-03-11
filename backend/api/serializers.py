@@ -15,6 +15,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         
         if User.objects.filter(email=data['email']).exists():
             raise serializers.ValidationError({"email" : "This email is already in use."})
+        
+        if User.objects.filter(username=data['username']).exists():
+            raise serializers.ValidationError({"username": "This username is already taken."})
         return data
 
     def create(self, validated_data):

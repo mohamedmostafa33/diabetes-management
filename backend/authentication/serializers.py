@@ -32,9 +32,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
         
         if account_type == 'patient':
-            PatientProfile.objects.create(user=user, name=user.email.split('@')[0])
+            PatientProfile.objects.create(user=user)
         elif account_type == 'doctor':
-            DoctorProfile.objects.create(user=user, name=user.email.split('@')[0], specialization="Unknown")
+            DoctorProfile.objects.create(user=user)
 
         return user
 

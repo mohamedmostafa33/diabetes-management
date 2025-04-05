@@ -7,6 +7,7 @@ import 'reminders_screen.dart';
 import 'chatbot_screen.dart';
 import 'alternative_medications_screen.dart';
 import 'ai_analysis_screen.dart';
+import 'profile_settings_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? _email;
   String? _accountType;
   String? _specialization;
+  String? _medicalHistory; // Add this field
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _email = prefs.getString('user_email');
       _accountType = prefs.getString('account_type');
       _specialization = prefs.getString('specialization');
+      _medicalHistory = prefs.getString('medical_history') ?? 'غير محدد'; // Load medical history
     });
   }
 
@@ -162,7 +165,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: EdgeInsets.zero,
           children: [
             Container(
-              height: 280,
+              height: 300, // Increased height to accommodate medical history
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.blue, Colors.blueAccent],
@@ -174,22 +177,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Image.asset(
-                      _accountType == 'doctor' ? 'assets/images/doctor_logo.png.webp' : 'assets/images/patient_logo.png.webp',
-                      height: 80,
-                      width: 80,
-                    ),
+                        child: Image.asset(
+                          _accountType == 'doctor' ? 'assets/images/doctor_logo.png.webp' : 'assets/images/patient_logo.png.webp',
+                          height: 80,
+                          width: 80,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ProfileSettingsScreen()),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -222,6 +239,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         textAlign: TextAlign.center,
                       ),
                     ),
+                  if (_accountType == 'patient') // Add medical history for patients
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        'التاريخ الطبي: ${_medicalHistory ?? 'غير محدد'}',
+                        style: const TextStyle(color: Colors.white70, fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -230,6 +256,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _buildDrawerItem(context, 'الشات بوت', Icons.chat, ChatbotScreen()),
             _buildDrawerItem(context, 'الأدوية البديلة', Icons.medical_services, AlternativeMedicationsScreen()),
             _buildDrawerItem(context, 'التنبؤ بمرض السكر', Icons.analytics, AIAnalysisScreen()),
+            _buildDrawerItem(context, 'إعدادات الملف الشخصي', Icons.person, ProfileSettingsScreen()),
             const Divider(),
             const Spacer(),
             ListTile(

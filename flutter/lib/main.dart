@@ -10,7 +10,7 @@ import 'screens/profile_settings_screen.dart';
 import 'screens/chatbot_screen.dart';
 import 'screens/alternative_medications_screen.dart';
 import 'screens/account_type_screen.dart';
-import 'screens/reset_password_screen.dart'; 
+import 'screens/reset_password_screen.dart';
 
 void main() {
   runApp(DiabetesApp());
@@ -75,7 +75,7 @@ class DiabetesApp extends StatelessWidget {
         '/chatbot': (context) => ChatbotScreen(),
         '/alternative_medications': (context) => AlternativeMedicationsScreen(),
         '/account_type': (context) => AccountTypeScreen(),
-        '/reset_password': (context) => ResetPasswordScreen(), // 
+        '/reset_password': (context) => ResetPasswordScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/sign_up') {

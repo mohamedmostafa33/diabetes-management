@@ -11,7 +11,11 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
   void _navigateToSignUp() {
     if (_selectedAccountType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('يرجى اختيار نوع الحساب'), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('يرجى اختيار نوع الحساب'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
       );
       return;
     }
@@ -33,7 +37,11 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('اختر نوع الحساب الخاص بك', textAlign: TextAlign.center, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              'اختر نوع الحساب الخاص بك',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 20),
             _buildAccountTypeOption('مريض', 'patient', 'assets/images/patient_logo.png.webp'),
             SizedBox(height: 10),
@@ -56,7 +64,8 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
           _selectedAccountType = value;
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
         padding: EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: _selectedAccountType == value ? Colors.blue.withOpacity(0.2) : Colors.white,
@@ -67,7 +76,15 @@ class _AccountTypeScreenState extends State<AccountTypeScreen> {
           children: [
             Image.asset(imagePath, height: 80),
             SizedBox(height: 10),
-            Text(title, textAlign: TextAlign.center, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _selectedAccountType == value ? Colors.blue : Colors.black)),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _selectedAccountType == value ? Colors.blue : Colors.black,
+              ),
+            ),
           ],
         ),
       ),

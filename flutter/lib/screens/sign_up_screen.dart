@@ -55,16 +55,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       var responseData = jsonDecode(response.body);
       if (response.statusCode == 201) {
+        // حفظ الـ tokens في SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_email', _emailController.text.trim());
-        await prefs.setString('account_type', widget.accountType);
-        await prefs.setString('first_name', _firstNameController.text.trim());
-        await prefs.setString('last_name', _lastNameController.text.trim());
+        await prefs.setString('access_token', responseData['access']);
+        await prefs.setString('refresh_token', responseData['refresh']);
+        // حفظ بيانات المستخدم (اختياري)
+        await prefs.setString('user_email', responseData['user']['email']);
+        await prefs.setString('account_type', responseData['user']['account_type']);
+        await prefs.setString('first_name', responseData['user']['first_name']);
+        await prefs.setString('last_name', responseData['user']['last_name']);
         if (widget.accountType == 'doctor') {
           await prefs.setString('specialization', _specializationController.text.trim());
         }
 
-        _showSnackBar('تم إنشاء الحساب بنجاح', Colors.green);
+        _showSnackBar('تم إنشاء الحساب بنجاح!', Colors.green);
+        // الانتقال مباشرة للـ dashboard
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
         _showSnackBar(responseData['error'] ?? 'حدث خطأ ما', Colors.red);

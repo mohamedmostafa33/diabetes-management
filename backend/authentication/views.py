@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import UserRegisterSerializer, UserLoginSerializer
 from django.contrib.auth.tokens import default_token_generator 
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
@@ -18,6 +19,11 @@ def user_register(request):
     if serializer.is_valid():
         user = serializer.save()
         profile = user.patientprofile if hasattr(user, 'patientprofile') else user.doctorprofile
+     
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
         return Response({
             "message": "User registered successfully!",
             "user": {
@@ -25,8 +31,10 @@ def user_register(request):
                 "email": user.email,
                 "first_name": profile.first_name,
                 "last_name": profile.last_name,
-                "account_type": request.data['account_type']  
-            }
+                "account_type": request.data['account_type']
+            },
+            "refresh": refresh_token,
+            "access": access_token
         }, status=status.HTTP_201_CREATED)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

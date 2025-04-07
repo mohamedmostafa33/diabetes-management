@@ -8,6 +8,7 @@ import 'alternative_medications_screen.dart';
 import 'ai_analysis_screen.dart';
 import 'profile_screen.dart';
 import 'package:flutter_/services/http_service.dart';
+import 'package:flutter_/services/notification_service.dart'; 
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -52,7 +53,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('Loaded specialization: $_specialization');
     });
 
-    // تحديث الـ tokens في HttpService لما نجيب البيانات من SharedPreferences
     String? accessToken = prefs.getString('access_token');
     String? refreshToken = prefs.getString('refresh_token');
     if (accessToken != null && refreshToken != null) {
@@ -199,6 +199,76 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  // دالة لعرض الإشعارات في Dialog
+  void _showNotificationsDialog() async {
+    List<Map<String, dynamic>> loggedNotifications = await NotificationService.getLoggedNotifications();
+
+    // تصنيف الإشعارات حسب النوع
+    Map<String, List<Map<String, dynamic>>> notificationsByType = {
+      'Blood Glucose Test': [],
+      'Medication': [],
+      'Hydration': [],
+    };
+
+    for (var notification in loggedNotifications) {
+      String reminderType = notification['reminder_type'];
+      if (notificationsByType.containsKey(reminderType)) {
+        notificationsByType[reminderType]!.add(notification);
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('الإشعارات المرسلة'),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: notificationsByType.entries.map((entry) {
+                String type = entry.key;
+                List<Map<String, dynamic>> notifications = entry.value;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      type,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    if (notifications.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text('لا توجد إشعارات مرسلة من هذا النوع'),
+                      )
+                    else
+                      ...notifications.map((notification) {
+                        DateTime scheduledTime = DateTime.parse(notification['scheduled_time']);
+                        return ListTile(
+                          title: Text(notification['title']),
+                          subtitle: Text(
+                            'الوقت: ${scheduledTime.hour}:${scheduledTime.minute.toString().padLeft(2, '0')}',
+                          ),
+                        );
+                      }).toList(),
+                    const Divider(),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('إغلاق'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -211,6 +281,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           centerTitle: true,
           backgroundColor: Colors.blue,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.white),
+              onPressed: _showNotificationsDialog, // استدعاء الدالة لعرض الإشعارات
+            ),
+          ],
         ),
         drawer: Drawer(
           child: ListView(

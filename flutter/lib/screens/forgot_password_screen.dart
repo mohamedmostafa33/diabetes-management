@@ -37,7 +37,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
         var response = await HttpService().makeRequest(
           method: 'POST',
-          url: Uri.parse('http://127.0.0.1:8000/api/password_reset/'),
+          url: Uri.parse('http://10.0.2.2:8000/api/password_reset/'),
           headers: {'Content-Type': 'application/json'},
           body: {'email': email}, // رجعنا الـ body يكون map
         );

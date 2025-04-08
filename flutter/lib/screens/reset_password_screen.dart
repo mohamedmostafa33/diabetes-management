@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     try {
       var response = await HttpService().makeRequest(
         method: 'POST',
-        url: Uri.parse('http://127.0.0.1:8000/api/password_reset_confirm/'),
+        url: Uri.parse('http://10.0.2.2:8000/api/password_reset_confirm/'),
         headers: {'Content-Type': 'application/json'},
         body: {
           'otp': otp,

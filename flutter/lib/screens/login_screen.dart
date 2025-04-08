@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  final String _apiUrl = 'http://127.0.0.1:8000/api/login/';
+  final String _apiUrl = 'http://10.0.2.2:8000/api/login/';
 
   bool isValidEmail(String email) {
     return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")

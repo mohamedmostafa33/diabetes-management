@@ -36,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       var url = Uri.parse('http://127.0.0.1:8000/api/register/');
       var requestBody = {
         'email': _emailController.text.trim(),
-        'password1': _passwordController.text.trim(),
+        'password1': _passwordController.text.trim(), // Removed the backtick
         'password2': _confirmPasswordController.text.trim(),
         'first_name': _firstNameController.text.trim(),
         'last_name': _lastNameController.text.trim(),
@@ -104,114 +104,116 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('إنشاء حساب')),
       body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: InputDecoration(labelText: 'الاسم الأول'),
-                  textDirection: TextDirection.rtl,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'يرجى إدخال الاسم الأول';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(labelText: 'الاسم الأخير'),
-                  textDirection: TextDirection.rtl,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'يرجى إدخال الاسم الأخير';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                if (widget.accountType == 'doctor')
-                  Column(
-                    children: [
-                      TextFormField(
-                        controller: _specializationController,
-                        decoration: InputDecoration(labelText: 'التخصص'),
-                        textDirection: TextDirection.rtl,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) return 'يرجى إدخال التخصص';
-                          return null;
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(labelText: 'الاسم الأول'),
+                    textDirection: TextDirection.rtl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'يرجى إدخال الاسم الأول';
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(labelText: 'الاسم الأخير'),
+                    textDirection: TextDirection.rtl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'يرجى إدخال الاسم الأخير';
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  if (widget.accountType == 'doctor')
+                    Column(
+                      children: [
+                        TextFormField(
+                          controller: _specializationController,
+                          decoration: InputDecoration(labelText: 'التخصص'),
+                          textDirection: TextDirection.rtl,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'يرجى إدخال التخصص';
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'البريد الإلكتروني'),
+                    textDirection: TextDirection.rtl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'يرجى إدخال البريد الإلكتروني';
+                      if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) return 'البريد الإلكتروني غير صحيح';
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'كلمة المرور',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
                         },
                       ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'البريد الإلكتروني'),
-                  textDirection: TextDirection.rtl,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'يرجى إدخال البريد الإلكتروني';
-                    if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) return 'البريد الإلكتروني غير صحيح';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'كلمة المرور',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
                     ),
+                    textDirection: TextDirection.rtl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'يرجى إدخال كلمة المرور';
+                      if (value.length < 6) return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                      return null;
+                    },
                   ),
-                  textDirection: TextDirection.rtl,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'يرجى إدخال كلمة المرور';
-                    if (value.length < 6) return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'تأكيد كلمة المرور',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'تأكيد كلمة المرور',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
                     ),
+                    textDirection: TextDirection.rtl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'يرجى تأكيد كلمة المرور';
+                      if (value != _passwordController.text) return 'كلمتا المرور غير متطابقتين';
+                      return null;
+                    },
                   ),
-                  textDirection: TextDirection.rtl,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'يرجى تأكيد كلمة المرور';
-                    if (value != _passwordController.text) return 'كلمتا المرور غير متطابقتين';
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                _isLoading
-                    ? CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: _register,
-                        child: Text('إنشاء الحساب'),
-                      ),
-              ],
+                  SizedBox(height: 20),
+                  _isLoading
+                      ? CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: _register,
+                          child: Text('إنشاء الحساب'),
+                        ),
+                ],
+              ),
             ),
           ),
         ),

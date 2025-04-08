@@ -8,7 +8,7 @@ import 'alternative_medications_screen.dart';
 import 'ai_analysis_screen.dart';
 import 'profile_screen.dart';
 import 'package:flutter_/services/http_service.dart';
-import 'package:flutter_/services/notification_service.dart'; 
+import 'package:flutter_/services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -169,7 +169,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               );
             },
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(8.0), // Reduced padding to allow more space for content
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,12 +181,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       width: double.infinity,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8), // Reduced spacing
                   Text(
                     title,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 20, // Reduced font size to fit better
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -199,21 +199,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // دالة لعرض الإشعارات في Dialog
   void _showNotificationsDialog() async {
     List<Map<String, dynamic>> loggedNotifications = await NotificationService.getLoggedNotifications();
 
-    // تصنيف الإشعارات حسب النوع
     Map<String, List<Map<String, dynamic>>> notificationsByType = {
-      'Blood Glucose Test': [],
-      'Medication': [],
-      'Hydration': [],
+      'قياس السكر': [],
+      'الدواء': [],
+      'شرب الماء': [],
     };
 
     for (var notification in loggedNotifications) {
       String reminderType = notification['reminder_type'];
       if (notificationsByType.containsKey(reminderType)) {
         notificationsByType[reminderType]!.add(notification);
+      } else {
+        // Map English reminder types to Arabic for display
+        String arabicType;
+        switch (reminderType) {
+          case 'Blood Glucose Test':
+            arabicType = 'قياس السكر';
+            break;
+          case 'Medication':
+            arabicType = 'الدواء';
+            break;
+          case 'Hydration':
+            arabicType = 'شرب الماء';
+            break;
+          default:
+            arabicType = reminderType;
+        }
+        notificationsByType[arabicType] = [notification];
       }
     }
 
@@ -284,7 +299,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.notifications, color: Colors.white),
-              onPressed: _showNotificationsDialog, // استدعاء الدالة لعرض الإشعارات
+              onPressed: _showNotificationsDialog,
             ),
           ],
         ),
@@ -360,7 +375,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0), // Reduced padding to maximize space
           child: Column(
             children: [
               if (_showWelcomeMessage)
@@ -396,9 +411,9 @@ class DashboardGrid extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 1.0,
+        crossAxisSpacing: 8, // Reduced spacing
+        mainAxisSpacing: 8, // Reduced spacing
+        childAspectRatio: 0.85, // Adjusted to make boxes taller and fit better
       ),
       itemCount: _dashboardItems.length,
       itemBuilder: (context, index) {

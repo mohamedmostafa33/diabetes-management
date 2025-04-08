@@ -11,36 +11,32 @@ class RemindersScreen extends StatefulWidget {
 
 class _RemindersScreenState extends State<RemindersScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _selectedReminderType; // متغير لتخزين نوع التذكير المختار (Display value)
+  String? _selectedReminderType;
   TimeOfDay? _selectedTime;
   List<Map<String, dynamic>> _reminders = [];
   bool _isLoading = false;
 
-  // قايمة الأنواع المتاحة للتذكيرات (Display values)
   final List<String> _reminderTypes = [
-    'Blood Glucose Test',
-    'Medication',
-    'Hydration',
+    'قياس السكر',
+    'الدواء',
+    'شرب الماء',
   ];
 
-  // Map لربط القيم اللي بتتعرض للمستخدم بالقيم اللي بتتخزن في الـ Backend
   final Map<String, String> _reminderTypeToApiValue = {
-    'Blood Glucose Test': 'blood_glucose_test',
-    'Medication': 'medication',
-    'Hydration': 'hydration',
+    'قياس السكر': 'blood_glucose_test',
+    'الدواء': 'medication',
+    'شرب الماء': 'hydration',
   };
 
-  // Map لربط القيم اللي بتيجي من الـ API بالقيم اللي بتتعرض للمستخدم
   final Map<String, String> _apiValueToReminderType = {
-    'blood_glucose_test': 'Blood Glucose Test',
-    'medication': 'Medication',
-    'hydration': 'Hydration',
+    'blood_glucose_test': 'قياس السكر',
+    'medication': 'الدواء',
+    'hydration': 'شرب الماء',
   };
 
   @override
   void initState() {
     super.initState();
-    // Initialize notifications
     NotificationService.init();
     _loadReminders();
   }
@@ -80,7 +76,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (response.statusCode == 200) {
         var responseData = jsonDecode(utf8.decode(response.bodyBytes));
         setState(() {
-          // Convert API values to display values
           _reminders = List<Map<String, dynamic>>.from(responseData).map((reminder) {
             return {
               ...reminder,
@@ -89,7 +84,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
           }).toList();
         });
 
-        // Schedule notifications for all active reminders
         for (var reminder in _reminders) {
           if (reminder['active']) {
             _scheduleNotificationForReminder(reminder);
@@ -123,7 +117,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       String? accessToken = prefs.getString('access_token');
 
       if (accessToken == null) {
-        _showSnackBar('يرجى تسجيل الدخول Wمرة أخرى', Colors.red);
+        _showSnackBar('يرجى تسجيل الدخول مرة أخرى', Colors.red);
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
@@ -151,10 +145,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (response.statusCode == 201) {
         var newReminder = jsonDecode(response.body);
         _showSnackBar('تم إضافة التذكير بنجاح!', Colors.green);
-        _selectedReminderType = null; // Reset the dropdown
+        _selectedReminderType = null;
         _selectedTime = null;
 
-        // Schedule notification for the new reminder
         _scheduleNotificationForReminder(newReminder);
 
         _loadReminders();
@@ -209,7 +202,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
         var updatedReminder = jsonDecode(response.body);
         _showSnackBar('تم تعديل التذكير بنجاح!', Colors.green);
 
-        // Cancel the old notification and schedule a new one
         await NotificationService.cancelNotification(id);
         _scheduleNotificationForReminder(updatedReminder);
 
@@ -257,7 +249,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
       if (response.statusCode == 204) {
         _showSnackBar('تم حذف التذكير بنجاح!', Colors.green);
-        // Cancel the scheduled notification
         await NotificationService.cancelNotification(id);
         _loadReminders();
       } else {
@@ -277,7 +268,6 @@ class _RemindersScreenState extends State<RemindersScreen> {
     final hour = int.parse(timeParts[0]);
     final minute = int.parse(timeParts[1]);
 
-    // Use today's date with the reminder's time
     final now = DateTime.now();
     final scheduledTime = DateTime(now.year, now.month, now.day, hour, minute);
 

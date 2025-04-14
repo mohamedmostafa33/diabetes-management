@@ -25,14 +25,15 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
       lastDate: DateTime.now(),
     );
 
-    if (pickedDate == null || !mounted) return;
+    if (pickedDate == null) return;
 
+    if (!mounted) return;
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
 
-    if (pickedTime == null || !mounted) return;
+    if (pickedTime == null) return;
 
     final DateTime pickedDateTime = DateTime(
       pickedDate.year,
@@ -48,6 +49,7 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
         .replaceAll('AM', 'صباحًا')
         .replaceAll('PM', 'مساءً');
 
+    if (!mounted) return;
     setState(() {
       _dateController.text = formattedDate;
       _timeController.text = formattedTime;
@@ -58,13 +60,11 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
     if (_glucoseController.text.isNotEmpty &&
         _dateController.text.isNotEmpty &&
         _timeController.text.isNotEmpty) {
-      String formattedDateTime =
-          '${_dateController.text} ${_timeController.text}';
-
       setState(() {
         glucoseReadings.add({
           'value': _glucoseController.text,
-          'date': formattedDateTime,
+          'date': _dateController.text,
+          'time': _timeController.text,
           'type': _selectedReadingType,
         });
         _glucoseController.clear();
@@ -83,6 +83,106 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
       glucoseReadings.removeAt(index);
     });
     _showSnackBar('تم حذف القراءة بنجاح!', Colors.green);
+  }
+
+  void _editReading(int index) {
+    final reading = glucoseReadings[index];
+    _glucoseController.text = reading['value']!;
+    _dateController.text = reading['date']!;
+    _timeController.text = reading['time']!;
+    setState(() {
+      _selectedReadingType = reading['type']!;
+    });
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تعديل القراءة'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _glucoseController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  labelText: 'مستوى السكر (mg/dL)',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _dateController,
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'التاريخ',
+                ),
+                onTap: () => _selectDateTime(context),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _timeController,
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'الوقت',
+                ),
+                onTap: () => _selectDateTime(context),
+              ),
+              const SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                value: _selectedReadingType,
+                items: ['صائم', 'قبل الأكل', 'بعد الأكل']
+                    .map((type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(type),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedReadingType = value!;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'نوع القراءة',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (_glucoseController.text.isNotEmpty &&
+                  _dateController.text.isNotEmpty &&
+                  _timeController.text.isNotEmpty) {
+                setState(() {
+                  glucoseReadings[index] = {
+                    'value': _glucoseController.text,
+                    'date': _dateController.text,
+                    'time': _timeController.text,
+                    'type': _selectedReadingType,
+                  };
+                });
+                _glucoseController.clear();
+                _dateController.clear();
+                _timeController.clear();
+                Navigator.of(context).pop();
+                _showSnackBar('تم تعديل القراءة بنجاح!', Colors.green);
+              } else {
+                _showSnackBar('يرجى ملء جميع الحقول!', Colors.red);
+              }
+            },
+            child: const Text('حفظ'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showSnackBar(String message, Color color) {
@@ -140,22 +240,19 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
                 decoration: InputDecoration(
                   labelText: 'مستوى السكر (mg/dL)',
                   prefixIcon: const Icon(Icons.monitor_heart),
-                  filled: true, // تفعيل الخلفية
-                  fillColor: Colors.white, // خلفية بيضاء
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8), // زوايا دائرية خفيفة
-                    borderSide: const BorderSide(
-                        color: Colors.black, width: 1), // خط أسود رفيع
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.black, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                        color: Colors.black, width: 1), // نفس الخط لما يكون مش متفعل
+                    borderSide: const BorderSide(color: Colors.black, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                        color: Colors.black, width: 1.5), // خط أسمك لما يكون متفعل
+                    borderSide: const BorderSide(color: Colors.black, width: 1.5),
                   ),
                 ),
               ),
@@ -169,22 +266,19 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
                       decoration: InputDecoration(
                         labelText: 'التاريخ',
                         prefixIcon: const Icon(Icons.calendar_today),
-                        filled: true, // تفعيل الخلفية
-                        fillColor: Colors.white, // خلفية بيضاء
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8), // زوايا دائرية
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1), // خط أسود رفيع
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1), // نفس الخط لما يكون مش متفعل
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1.5), // خط أسمك لما يكون متفعل
+                          borderSide: const BorderSide(color: Colors.black, width: 1.5),
                         ),
                       ),
                       onTap: () => _selectDateTime(context),
@@ -198,22 +292,19 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
                       decoration: InputDecoration(
                         labelText: 'الوقت',
                         prefixIcon: const Icon(Icons.access_time),
-                        filled: true, // تفعيل الخلفية
-                        fillColor: Colors.white, // خلفية بيضاء
+                        filled: true,
+                        fillColor: Colors.white,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8), // زوايا دائرية
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1), // خط أسود رفيع
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1), // نفس الخط لما يكون مش متفعل
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: Colors.black, width: 1.5), // خط أسمك لما يكون متفعل
+                          borderSide: const BorderSide(color: Colors.black, width: 1.5),
                         ),
                       ),
                       onTap: () => _selectDateTime(context),
@@ -237,23 +328,23 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
                 },
                 decoration: InputDecoration(
                   labelText: 'نوع القراءة',
-                  labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.teal), // نفس لون الـ label لباقي الحقول
-                  filled: true, // تفعيل الخلفية
-                  fillColor: Colors.white, // خلفية بيضاء
+                  labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.teal),
+                  filled: true,
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8), // زوايا دائرية
-                    borderSide: const BorderSide(color: Colors.black, width: 1), // خط أسود رفيع
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.black, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.black, width: 1), // نفس الخط لما يكون مش متفعل
+                    borderSide: const BorderSide(color: Colors.black, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.black, width: 1.5), // خط أسمك لما يكون متفعل
+                    borderSide: const BorderSide(color: Colors.black, width: 1.5),
                   ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always, // الـ label يترفع دايمًا
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10), // ضبط المسافات الداخلية
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 ),
               ),
               const SizedBox(height: 20),
@@ -281,13 +372,23 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('تاريخ التسجيل: ${glucoseReadings[index]['date']}'),
+                            Text('التاريخ: ${glucoseReadings[index]['date']}'),
+                            Text('الوقت: ${glucoseReadings[index]['time']}'),
                             Text('نوع القراءة: ${glucoseReadings[index]['type']}'),
                           ],
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteReading(index),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () => _editReading(index),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _deleteReading(index),
+                            ),
+                          ],
                         ),
                       ),
                     );

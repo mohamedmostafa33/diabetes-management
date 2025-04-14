@@ -376,7 +376,6 @@ class DashboardScreenState extends State<DashboardScreen> {
       final response = await HttpService().makeRequest(
         method: 'POST',
         url: Uri.parse('http://10.0.2.2:8000/api/logout/'),
-        //url: Uri.parse('http://127.0.0.1:8000/api/logout/'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -437,12 +436,10 @@ class DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // وظيفة لإرسال طلب بحث إلى API
   Future<List<Map<String, dynamic>>> _fetchDoctors(String query) async {
     final response = await HttpService().makeRequest(
       method: 'GET',
       url: Uri.parse('http://10.0.2.2:8000/api/search-doctors/?query=$query'),
-      //url: Uri.parse('http://127.0.0.1:8000/api/search-doctors/?query=$query'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -471,7 +468,6 @@ class DashboardScreenState extends State<DashboardScreen> {
     return [];
   }
 
-  // وظيفة البحث عن الأطباء
   Future<void> _searchDoctors(String query) async {
     if (query.trim().isEmpty) {
       setState(() {
@@ -487,25 +483,19 @@ class DashboardScreenState extends State<DashboardScreen> {
     });
 
     try {
-      // تقسيم الاستعلام إذا كان يحتوي على فراغ
       final queryParts = query.trim().split(' ');
 
       if (queryParts.length >= 2) {
         final firstNameQuery = queryParts[0];
         final lastNameQuery = queryParts[1];
 
-        // إرسال طلب للبحث بـ first_name
         final firstNameResults = await _fetchDoctors(firstNameQuery);
-        // إرسال طلب للبحث بـ last_name
         final lastNameResults = await _fetchDoctors(lastNameQuery);
 
-        // دمج النتائج: نأخذ الأطباء الذين يتطابقون مع كلا الشرطين
         _searchResults = [];
 
-        // نستخدم قائمة فريدة بناءً على معرف الطبيب (id) لتجنب التكرار
         final Map<String, Map<String, dynamic>> uniqueDoctors = {};
 
-        // نتحقق من النتائج الأولى (first_name)
         for (var doctor in firstNameResults) {
           final firstName = (doctor['first_name'] ?? '').toString().toLowerCase();
           if (firstName.contains(firstNameQuery.toLowerCase())) {
@@ -514,7 +504,6 @@ class DashboardScreenState extends State<DashboardScreen> {
           }
         }
 
-        // نتحقق من النتائج الثانية (last_name)
         for (var doctor in lastNameResults) {
           final lastName = (doctor['last_name'] ?? '').toString().toLowerCase();
           final doctorId = doctor['id'].toString();
@@ -690,13 +679,13 @@ class DashboardScreenState extends State<DashboardScreen> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                DrawerHeader(
+                Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                   decoration: const BoxDecoration(
                     gradient: AppTheme.appBarGradient,
                   ),
                   child: SizedBox(
-                    height: 400,
+                    height: 250, // زيادة الارتفاع لتوسيع الجزء السماوي
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -705,38 +694,38 @@ class DashboardScreenState extends State<DashboardScreen> {
                           _accountType == 'doctor'
                               ? 'assets/images/doctor_logo.png.webp'
                               : 'assets/images/patient_logo.png.webp',
-                          height: 60,
-                          width: 60,
+                          height: 90, // زيادة حجم الصورة لتبدو أوضح
+                          width: 90,
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 12), // زيادة المسافة بين الصورة والنص
                         Text(
                           '${_firstName ?? 'الاسم'} ${_lastName ?? ''}',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 28, // زيادة حجم الخط
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 8), // زيادة المسافة بين النصوص
                         Text(
                           _email ?? 'الإيميل',
                           style: const TextStyle(
                             color: Colors.white70,
-                            fontSize: 18,
+                            fontSize: 18, // زيادة حجم الخط
                           ),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 8), // زيادة المسافة بين النصوص
                         Text(
                           _accountType == 'doctor' ? 'دكتور' : 'مريض',
                           style: const TextStyle(
                             color: Colors.white70,
-                            fontSize: 18,
+                            fontSize: 20, // زيادة حجم الخط
                           ),
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
@@ -746,6 +735,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 10), // زيادة المسافة لتحريك الأيقونات لأسفل أكثر
                 _buildDrawerItem(
                   context,
                   'الملف الشخصي',
@@ -792,6 +782,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                     const PatientMonitoringScreen(),
                   ),
                 const Divider(),
+                const SizedBox(height: 10), // مسافة قبل "تسجيل الخروج"
                 _buildDrawerItem(
                   context,
                   'تسجيل الخروج',
@@ -896,7 +887,6 @@ class DashboardScreenState extends State<DashboardScreen> {
                                     final response = await HttpService().makeRequest(
                                       method: 'POST',
                                       url: Uri.parse('http://10.0.2.2:8000/api/link-to-doctor/'),
-                                      //url: Uri.parse('http://127.0.0.1:8000/api/link-to-doctor/'),
                                       headers: {'Content-Type': 'application/json'},
                                       body: jsonEncode({'doctor_id': doctor['id']}),
                                     );
@@ -919,7 +909,6 @@ class DashboardScreenState extends State<DashboardScreen> {
                                       );
                                     } else {
                                       String errorMessage = 'خطأ غير معروف';
-                                      // التأكد إن الـ response هو JSON قبل ما نعمل decode
                                       if (response.headers['content-type']?.contains('application/json') == true) {
                                         try {
                                           final responseData = jsonDecode(response.body);

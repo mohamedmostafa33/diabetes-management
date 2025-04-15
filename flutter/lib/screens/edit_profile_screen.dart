@@ -421,17 +421,17 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                 style: Theme.of(context).textTheme.bodyLarge,
                                 maxLines: 3,
                                 validator: (value) {
-                                  if (value != null && value.isNotEmpty) {
-                                    if (!RegExp(r'^[\p{L}\s\d\u0660-\u0669\-\/.,]*$', unicode: true).hasMatch(value)) {
-                                      return 'السجل الصحي يجب أن يحتوي على حروف وأرقام فقط';
+                                    if (value != null && value.isNotEmpty) {
+                                        if (!RegExp(r'^[\p{L}\s\d\u0660-\u0669:\/\-\.,]*$', unicode: true).hasMatch(value)) {
+                                            return 'السجل الصحي يحتوي على رموز غير مسموح بها';
+                                        }
+                                        if (value.trim().isEmpty) {
+                                            return 'السجل الصحي لا يمكن أن يكون مسافات فقط';
+                                        }
                                     }
-                                    if (value.trim().isEmpty) {
-                                      return 'السجل الصحي لا يمكن أن يكون مسافات فقط';
-                                    }
-                                  }
-                                  return null;
+                                    return null;
                                 },
-                              ),
+                               ),
                             ),
                             const SizedBox(height: 16),
                             // كارد الدكتور المرتبط

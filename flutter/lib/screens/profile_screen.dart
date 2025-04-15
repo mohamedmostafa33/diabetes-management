@@ -34,33 +34,62 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
     });
 
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      setState(() {
-        _firstName = prefs.getString('first_name');
-        _lastName = prefs.getString('last_name');
-        _email = prefs.getString('user_email');
-        _accountType = prefs.getString('account_type');
-        _specialization = prefs.getString('specialization');
-        _medicalHistory = prefs.getString('medical_history') ?? 'غير متوفر';
-      });
+      // Fetch profile data from API
+      final response = await HttpService().makeRequest(
+        method: 'GET',
+        url: Uri.parse('http://127.0.0.1:8000/api/profile/'),
+        headers: {'Content-Type': 'application/json'},
+      );
 
-      if (_accountType == 'patient') {
-        await _fetchLinkedDoctor();
+      if (response == null) {
+        _showSnackBar('فشل الاتصال بالسيرفر', Colors.red);
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        setState(() {
+          _email = responseData['email'];
+          _firstName = responseData['first_name'];
+          _lastName = responseData['last_name'];
+
+          // Determine account type based on response fields
+          if (responseData.containsKey('medical_history')) {
+            _accountType = 'patient';
+            _medicalHistory = responseData['medical_history'] ?? 'غير متوفر';
+            _specialization = null;
+          } else if (responseData.containsKey('specialization')) {
+            _accountType = 'doctor';
+            _specialization = responseData['specialization'] ?? 'غير محدد';
+            _medicalHistory = null;
+          } else {
+            _accountType = null;
+            _medicalHistory = null;
+            _specialization = null;
+          }
+        });
+
+        // Fetch linked doctor if the user is a patient
+        if (_accountType == 'patient') {
+          await _fetchLinkedDoctor();
+        }
+      } else {
+        _showSnackBar('فشل جلب بيانات الملف الشخصي', Colors.red);
       }
     } catch (e) {
       _showSnackBar('فشل تحميل البيانات: $e', Colors.red);
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Future<void> _fetchLinkedDoctor() async {
     try {
       final response = await HttpService().makeRequest(
         method: 'GET',
-        url: Uri.parse('http://10.0.2.2:8000/api/my-doctor/'),
+        url: Uri.parse('http://127.0.0.1:8000/api/my-doctor/'),
         headers: {'Content-Type': 'application/json'},
       );
 

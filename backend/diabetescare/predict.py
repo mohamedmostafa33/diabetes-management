@@ -4,11 +4,14 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 # Load the trained model and scaler
-with open("/kaggle/input/gcktyckugil/scikitlearn/default/1/diabetes (7).pkl", "rb") as file:
-    model = pickle.load(file)
-
-with open("/kaggle/input/hkuyfkf/transformers/default/1/scaler (3).pkl", "rb") as file:
-    scaler = pickle.load(file)
+try:
+    with open("/kaggle/input/uhvuiyyviyv/transformers/default/1/diabetes.pkl", "rb") as file:
+        model = pickle.load(file)
+    with open("/kaggle/input/uyvvyiviyv/scikitlearn/default/1/scaler.pkl", "rb") as file:
+        scaler = pickle.load(file)
+except FileNotFoundError:
+    print("Error: Model or scaler file not found. Please ensure 'diabetes.pkl' and 'scaler.pkl' are in the current directory.")
+    exit(1)
 
 # Define the feature columns (same as in training)
 numerical_cols = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 

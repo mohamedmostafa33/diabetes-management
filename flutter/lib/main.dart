@@ -15,6 +15,8 @@ import 'screens/reset_password_screen.dart';
 import 'package:diabetes_management/services/notification_service.dart';
 import 'config/theme.dart';
 
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.init();
@@ -37,6 +39,7 @@ class DiabetesApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      navigatorObservers: [routeObserver], 
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),

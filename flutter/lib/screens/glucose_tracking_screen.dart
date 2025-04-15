@@ -49,7 +49,7 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
     try {
       final response = await _httpService.makeRequest(
         method: 'GET',
-        url: Uri.parse('http://127.0.0.1:8000/api/glucose/list/'),
+        url: Uri.parse('http://10.0.2.2:8000/api/glucose/list/'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -76,7 +76,7 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
     try {
       final response = await _httpService.makeRequest(
         method: 'GET',
-        url: Uri.parse('http://127.0.0.1:8000/api/profile/'),
+        url: Uri.parse('http://10.0.2.2:8000/api/profile/'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -85,7 +85,8 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
       if (response != null && response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('medical_history', responseData['medical_history'] ?? 'غير متوفر');
+        String medicalHistory = responseData['medical_history'] ?? 'غير متوفر';
+        await prefs.setString('medical_history', medicalHistory);
       } else {
         _showSnackBar('فشل في جلب السجل الصحي!', Colors.red);
       }
@@ -161,7 +162,7 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
 
         final response = await _httpService.makeRequest(
           method: 'POST',
-          url: Uri.parse('http://127.0.0.1:8000/api/glucose/add/'),
+          url: Uri.parse('http://10.0.2.2:8000/api/glucose/add/'),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -178,7 +179,7 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
 
           _showSnackBar('تمت إضافة القراءة بنجاح!', Colors.green);
           await _fetchGlucoseReadings();
-          await _fetchMedicalHistory(); // Fetch and update medical_history
+          await _fetchMedicalHistory(); // Update SharedPreferences
         } else {
           _showSnackBar('فشل في إضافة القراءة!', Colors.red);
         }

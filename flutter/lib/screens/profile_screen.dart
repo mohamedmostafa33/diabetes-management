@@ -4,6 +4,7 @@ import 'edit_profile_screen.dart';
 import 'package:diabetes_management/config/theme.dart';
 import 'package:diabetes_management/services/http_service.dart';
 import 'dart:convert';
+import '../main.dart'; 
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,7 +13,7 @@ class ProfileScreen extends StatefulWidget {
   ProfileAndSettingsScreenState createState() => ProfileAndSettingsScreenState();
 }
 
-class ProfileAndSettingsScreenState extends State<ProfileScreen> {
+class ProfileAndSettingsScreenState extends State<ProfileScreen> with RouteAware, WidgetsBindingObserver {
   String? _firstName;
   String? _lastName;
   String? _email;
@@ -25,7 +26,42 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this); // Register WidgetsBindingObserver
     _loadUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Subscribe to the RouteObserver
+    final ModalRoute? route = ModalRoute.of(context);
+    if (route is ModalRoute) {
+      routeObserver.subscribe(this, route as ModalRoute);
+    }
+  }
+
+  @override
+  void dispose() {
+    // Unsubscribe from both observers
+    routeObserver.unsubscribe(this);
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when ProfileScreen becomes visible again after another screen pops
+    debugPrint('ProfileScreen: didPopNext called, refreshing data...');
+    _loadUserData();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('ProfileScreen: App resumed, refreshing data...');
+      _loadUserData();
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -37,7 +73,7 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
       // Fetch profile data from API
       final response = await HttpService().makeRequest(
         method: 'GET',
-        url: Uri.parse('http://127.0.0.1:8000/api/profile/'),
+        url: Uri.parse('http://10.0.2.2:8000/api/profile/'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -89,7 +125,7 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
     try {
       final response = await HttpService().makeRequest(
         method: 'GET',
-        url: Uri.parse('http://127.0.0.1:8000/api/my-doctor/'),
+        url: Uri.parse('http://10.0.2.2:8000/api/my-doctor/'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -143,6 +179,23 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Helper method to split medical history into a list of readings
+  List<String> _getMedicalHistoryReadings() {
+    if (_medicalHistory == null || _medicalHistory == 'غير متوفر') {
+      return ['غير متوفر'];
+    }
+    // Split the medical history by newlines and remove "Glucose Readings:" prefix
+    List<String> readings = _medicalHistory!.split('\n');
+    if (readings.isNotEmpty && readings[0].startsWith('Glucose Readings:')) {
+      readings.removeAt(0); // Remove the "Glucose Readings:" line
+    }
+    // Remove empty strings and trim each reading
+    return readings
+        .where((reading) => reading.trim().isNotEmpty)
+        .map((reading) => reading.trim())
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -163,6 +216,13 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
             ),
           ),
           elevation: 4,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.white),
+              onPressed: _loadUserData,
+              tooltip: 'تحديث البيانات',
+            ),
+          ],
         ),
         body: Container(
           decoration: const BoxDecoration(
@@ -280,14 +340,35 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> {
                                   ),
                                 if (_accountType == 'patient') ...[
                                   Text(
-                                    'السجل الصحي: ${_medicalHistory ?? 'غير متوفر'}',
+                                    'السجل الصحي:',
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           color: Colors.black87,
                                           fontSize: 16,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                     textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  // Display medical history as a scrollable list
+                                  SizedBox(
+                                    height: 150, // Adjust height as needed
+                                    child: ListView.builder(
+                                      itemCount: _getMedicalHistoryReadings().length,
+                                      itemBuilder: (context, index) {
+                                        final reading = _getMedicalHistoryReadings()[index];
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                          child: Text(
+                                            reading,
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.black87,
+                                                  fontSize: 14,
+                                                ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ],
                               ],

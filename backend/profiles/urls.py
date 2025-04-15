@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    get_profile,
     update_profile, 
     search_doctors, 
     link_patient_to_doctor, 
@@ -10,6 +11,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path('profile/', get_profile, name='get-profile'),
     path('update-profile/', update_profile, name="update-profile"),
     path('search-doctors/', search_doctors, name="search-doctors"),
     path('link-to-doctor/', link_patient_to_doctor, name="link-to-doctor"),

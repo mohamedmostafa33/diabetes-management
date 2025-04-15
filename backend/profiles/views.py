@@ -11,6 +11,29 @@ from .serializers import (
 )
 from .models import DoctorPatientRelation
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+    user = request.user
+
+    try:
+        if hasattr(user, 'patientprofile'):
+            serializer = PatientProfileSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif hasattr(user, 'doctorprofile'):
+            serializer = DoctorSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"error": "Profile not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):

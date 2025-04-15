@@ -42,3 +42,21 @@ def add_glucose_reading(request):
         "message": "Invalid data",
         "errors": serializer.errors
     }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_glucose_readings(request):
+    user = request.user
+
+    try:
+        patient = PatientProfile.objects.get(user=user)
+    except PatientProfile.DoesNotExist:
+        return Response({"error": "Only patients can access their glucose readings."}, status=status.HTTP_403_FORBIDDEN)
+
+    readings = GlucoseTracking.objects.filter(patient=patient).order_by('-timestamp')
+    serializer = GlucoseTrackingSerializer(readings, many=True)
+
+    return Response({
+        "message": "Glucose readings retrieved successfully!",
+        "data": serializer.data
+    }, status=status.HTTP_200_OK)

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:diabetes_management/config/theme.dart';
+import 'package:diabetes_management/services/http_service.dart'; 
+import 'dart:convert';
 
 class AlternativeMedicationsScreen extends StatefulWidget {
   const AlternativeMedicationsScreen({super.key});
@@ -10,57 +12,95 @@ class AlternativeMedicationsScreen extends StatefulWidget {
 
 class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> medications = [
-    {
-      'name': 'انسولين',
-      'description': 'الوصف',
-      'sideEffect': 'أثر جانبي',
-      'howToUse': 'يؤخذ مع الماء'
-    },
-  ];
   List<Map<String, String>> filteredMedications = [];
+  bool isLoading = false;
+  String? errorMessage;
   bool showAlternativeText = false;
 
-  @override
-  void initState() {
-    super.initState();
-    filteredMedications = medications;
-  }
+  // Instance of HttpService
+  final HttpService httpService = HttpService();
+  final String baseUrl = "http://10.0.2.2:8000/api"; // Adjust if needed
 
-  void _searchMedication(String query) {
+  // Fetch alternative medications from the API using HttpService
+  Future<void> _searchMedication(String drugName) async {
     setState(() {
-      if (query.isEmpty) {
-        filteredMedications = medications;
-        showAlternativeText = false;
-      } else {
-        filteredMedications = medications
-            .where((med) =>
-                med['name']!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-        showAlternativeText = true;
-      }
+      isLoading = true;
+      errorMessage = null;
+      filteredMedications = [];
+      showAlternativeText = false;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.yellow,
-              size: 30,
+    try {
+      final response = await httpService.makeRequest(
+        method: 'POST',
+        url: Uri.parse('$baseUrl/alternative-medicine/'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {'drug_name': drugName},
+      );
+
+      if (response == null) {
+        setState(() {
+          errorMessage = 'فشل في الاتصال: الرجاء تسجيل الدخول مرة أخرى';
+        });
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> result = jsonDecode(response.body);
+        if (result.containsKey('error')) {
+          setState(() {
+            errorMessage = result['error'];
+          });
+        } else {
+          final List<dynamic> recommendedDrugs = result['recommended_drugs'];
+          setState(() {
+            filteredMedications = recommendedDrugs.map((drug) => {
+                  'name': drug['Drug Name'].toString(),
+                  'description': drug['Description'].toString(),
+                  'sideEffect': drug['Side Effects'].toString(),
+                  'howToUse': drug['How to use with'].toString(),
+                }).toList();
+            showAlternativeText = true;
+          });
+
+          // Show warning SnackBar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: const [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.yellow,
+                    size: 30,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'يرجى اتباع تعليمات الدكتور وإعلامه بالدواء',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.redAccent,
+              duration: const Duration(seconds: 7),
             ),
-            const SizedBox(width: 10),
-            const Text(
-              'يرجى اتباع تعليمات الدكتور وإعلامه بالدواء',
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.redAccent,
-        duration: const Duration(seconds: 7),
-      ),
-    );
+          );
+        }
+      } else {
+        setState(() {
+          errorMessage = 'فشل في جلب الأدوية البديلة: ${response.body}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'خطأ في الاتصال: $e';
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -103,14 +143,17 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                         filled: true,
                         fillColor: Colors.white,
                       ),
-                      onChanged: (value) {},
                     ),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {
-                      _searchMedication(_searchController.text);
-                    },
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (_searchController.text.isNotEmpty) {
+                              _searchMedication(_searchController.text);
+                            }
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
@@ -120,7 +163,17 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                 ],
               ),
               const SizedBox(height: 20),
-              if (showAlternativeText) ...[
+              if (isLoading)
+                const Center(child: CircularProgressIndicator()),
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    errorMessage!,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                  ),
+                ),
+              if (!isLoading && errorMessage == null && showAlternativeText) ...[
                 const Padding(
                   padding: EdgeInsets.only(bottom: 10.0),
                   child: Text(
@@ -160,11 +213,11 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                         border: Border.all(color: Colors.grey),
                       ),
                       border: TableBorder(
-                        verticalInside: BorderSide(
+                        verticalInside: const BorderSide(
                           width: 2.0,
                           color: Colors.grey,
                         ),
-                        horizontalInside: BorderSide(
+                        horizontalInside: const BorderSide(
                           width: 2.0,
                           color: Colors.grey,
                         ),

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import GlucoseTracking
+from .models import GlucoseTracking, AnalysisImage
 
 class GlucoseTrackingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,3 +16,8 @@ class GlucoseTrackingSerializer(serializers.ModelSerializer):
         if value not in valid_types:
             raise serializers.ValidationError("Invalid glucose type. Must be one of: FBS, PPBS, RBS.")
         return value
+
+class AnalysisImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnalysisImage
+        fields = ['id', 'image', 'description', 'uploaded_at']

@@ -21,6 +21,7 @@ class AnalysisImage(models.Model):
     image = models.ImageField(upload_to='analysis_images/')
     description = models.TextField(blank=True, default='')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Analysis Image for {self.patient} uploaded at {self.uploaded_at}"

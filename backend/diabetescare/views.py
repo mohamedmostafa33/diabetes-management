@@ -7,6 +7,7 @@ from profiles.models import PatientProfile
 from .models import GlucoseTracking, AnalysisImage
 from .import predict
 import json
+import os
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -176,18 +177,42 @@ def upload_analysis(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def my_analyses(request):
+def my_analysis(request):
     user = request.user
 
     try:
         patient = PatientProfile.objects.get(user=user)
     except PatientProfile.DoesNotExist:
-        return Response({"error": "Only patients can view their analyses."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"error": "Only patients can view their analysis."}, status=status.HTTP_403_FORBIDDEN)
 
-    analyses = AnalysisImage.objects.filter(patient=patient).order_by('-uploaded_at')
-    serializer = AnalysisImageSerializer(analyses, many=True)
+    analysis = AnalysisImage.objects.filter(patient=patient).order_by('-uploaded_at')
+    serializer = AnalysisImageSerializer(analysis, many=True)
 
     return Response({
-        "message": "Your analyses retrieved successfully!",
+        "message": "Your analysis retrieved successfully!",
         "data": serializer.data
+    }, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_analysis(request, analysis_id):
+    user = request.user
+
+    try:
+        patient = PatientProfile.objects.get(user=user)
+    except PatientProfile.DoesNotExist:
+        return Response({"error": "Only patients can delete their analysis."}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        analysis = AnalysisImage.objects.get(id=analysis_id, patient=patient)
+    except AnalysisImage.DoesNotExist:
+        return Response({"error": "Analysis image not found or not owned by you."}, status=status.HTTP_404_NOT_FOUND)
+
+    if analysis.image and os.path.isfile(analysis.image.path):
+        os.remove(analysis.image.path)
+
+    analysis.delete()
+
+    return Response({
+        "message": "Analysis image deleted successfully!"
     }, status=status.HTTP_200_OK)

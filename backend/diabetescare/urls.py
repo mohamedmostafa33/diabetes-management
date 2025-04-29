@@ -10,4 +10,5 @@ urlpatterns = [
     path('upload-analysis/', views.upload_analysis, name='upload_analysis'),
     path('my-analysis/', views.my_analysis, name='my_analysis'),  
     path('delete-analysis/<int:analysis_id>/', views.delete_analysis, name='delete_analysis'),  
+    path('add-comment-to-analysis/<int:analysis_id>/', views.add_comment_to_analysis, name='add_comment_to_analysis'),
 ]

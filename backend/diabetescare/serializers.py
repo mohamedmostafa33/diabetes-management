@@ -20,4 +20,4 @@ class GlucoseTrackingSerializer(serializers.ModelSerializer):
 class AnalysisImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisImage
-        fields = ['id', 'image', 'description', 'uploaded_at']
+        fields = ['id', 'image', 'description', 'uploaded_at', 'comment']

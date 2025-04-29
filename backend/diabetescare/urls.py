@@ -7,4 +7,5 @@ urlpatterns = [
     path('glucose/list/', views.list_glucose_readings, name='add_glucose_reading'),
     path('alternative-medicine/', views.alternative_medicines, name='alternative_medicines'),
     path('drug-suggestions/', views.drug_suggestions, name='drug_suggestions'),
+    path('upload-analysis/', views.upload_analysis, name='upload_analysis'),
 ]

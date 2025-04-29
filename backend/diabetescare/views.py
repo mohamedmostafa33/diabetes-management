@@ -144,3 +144,25 @@ def drug_suggestions(request):
         return Response({"error": "Invalid JSON format in request body"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_analysis(request):
+    user = request.user
+
+    try:
+        patient = PatientProfile.objects.get(user=user)
+    except PatientProfile.DoesNotExist:
+        return Response({"error": "Only patients can upload analysis images."}, status=status.HTTP_403_FORBIDDEN)
+
+    if 'image' not in request.FILES:
+        return Response({"error": "No image file provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+    image = request.FILES['image']
+    description = request.POST.get('description', '')
+
+    return Response({
+        "message": "Analysis image uploaded successfully!",
+        "description": description,
+        "image_name": image.name
+    }, status=status.HTTP_201_CREATED)

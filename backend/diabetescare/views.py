@@ -2,9 +2,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import GlucoseTrackingSerializer
+from .serializers import GlucoseTrackingSerializer, AnalysisImageSerializer
 from profiles.models import PatientProfile
-from .models import GlucoseTracking 
+from .models import GlucoseTracking, AnalysisImage
 from .import predict
 import json
 
@@ -161,8 +161,15 @@ def upload_analysis(request):
     image = request.FILES['image']
     description = request.POST.get('description', '')
 
+    analysis_image = AnalysisImage.objects.create(
+        patient=patient,
+        image=image,
+        description=description
+    )
+
+    serializer = AnalysisImageSerializer(analysis_image)
+
     return Response({
         "message": "Analysis image uploaded successfully!",
-        "description": description,
-        "image_name": image.name
+        "data": serializer.data
     }, status=status.HTTP_201_CREATED)

@@ -10,6 +10,8 @@ from .serializers import (
     PatientProfileSerializer
 )
 from .models import DoctorPatientRelation
+from diabetescare.models import AnalysisImage
+from diabetescare.serializers import AnalysisImageSerializer
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -206,3 +208,28 @@ def get_patient_health_record(request, patient_id):
         return Response(serializer.data)
     except User.DoesNotExist:
         return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def patient_analysis(request, patient_id):
+    user = request.user
+    if not hasattr(user, 'doctorprofile'):
+        return Response({"error": "Only doctors can view patient analysis"}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        patient = User.objects.get(id=patient_id, patientprofile__isnull=False)
+        if not DoctorPatientRelation.objects.filter(doctor=user, patient=patient).exists():
+            return Response({"error": "This patient is not linked to you"}, status=status.HTTP_403_FORBIDDEN)
+
+        analysis = AnalysisImage.objects.filter(patient=patient.patientprofile).order_by('-uploaded_at')
+        serializer = AnalysisImageSerializer(analysis, many=True)
+
+        return Response({
+            "message": "Patient analysis retrieved successfully!",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({"error": "Patient not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

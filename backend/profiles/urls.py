@@ -7,7 +7,8 @@ from .views import (
     unlink_from_doctor,
     get_my_patients,
     get_patient_health_record,
-    get_my_doctor
+    get_my_doctor,
+    patient_analysis
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('my-doctor/', get_my_doctor, name='my-doctors'),
     path('my-patients/', get_my_patients, name='my-patients'),  
     path('patient-health-record/<int:patient_id>/', get_patient_health_record, name='patient-health-record'),
+    path('patient-analysis/<int:patient_id>/', patient_analysis, name='patient_analysis'),
 ]

@@ -173,3 +173,21 @@ def upload_analysis(request):
         "message": "Analysis image uploaded successfully!",
         "data": serializer.data
     }, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_analyses(request):
+    user = request.user
+
+    try:
+        patient = PatientProfile.objects.get(user=user)
+    except PatientProfile.DoesNotExist:
+        return Response({"error": "Only patients can view their analyses."}, status=status.HTTP_403_FORBIDDEN)
+
+    analyses = AnalysisImage.objects.filter(patient=patient).order_by('-uploaded_at')
+    serializer = AnalysisImageSerializer(analyses, many=True)
+
+    return Response({
+        "message": "Your analyses retrieved successfully!",
+        "data": serializer.data
+    }, status=status.HTTP_200_OK)

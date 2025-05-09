@@ -23,7 +23,7 @@ class DoctorProfile(models.Model):
     
 class DoctorPatientRelation(models.Model):
     doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='patients')
-    patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='doctors', unique=True)  
+    patient = models.OneToOneField(User, on_delete=models.CASCADE, related_name='doctors')
 
     def clean(self):
         if not hasattr(self.doctor, 'doctorprofile'):

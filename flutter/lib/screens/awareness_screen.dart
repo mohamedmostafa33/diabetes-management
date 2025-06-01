@@ -19,7 +19,7 @@ class AwarenessScreenState extends State<AwarenessScreen> {
         debugPrint('تم فتح الرابط بنجاح: $url');
       } else {
         debugPrint('لا يمكن فتح الرابط: لا يوجد تطبيق مناسب');
-        if (mounted) { // Added mounted check (line 17)
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('لا يمكن فتح الرابط: $url'),
@@ -30,7 +30,7 @@ class AwarenessScreenState extends State<AwarenessScreen> {
       }
     } catch (e) {
       debugPrint('خطأ أثناء فتح الرابط $url: $e');
-      if (mounted) { // Added mounted check (line 26)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('حدث خطأ أثناء فتح الرابط: $e'),
@@ -252,8 +252,28 @@ class AwarenessScreenState extends State<AwarenessScreen> {
                         ),
                   ),
                   trailing: TextButton(
-                    onPressed: () => _launchURL(
-                        'https://www.mohp.gov.eg/ArticleDetails.aspx?subject_id=2481'),
+                    onPressed: () => _launchURL('https://www.mohp.gov.eg/ArticleDetails.aspx?subject_id=2481'),
+                    child: Text(
+                      'زيارة',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.teal,
+                          ),
+                    ),
+                  ),
+                ),
+              ),
+              Directionality(
+                textDirection: TextDirection.rtl,
+                child: ListTile(
+                  leading: const Icon(Icons.link, color: Colors.blueAccent),
+                  title: Text(
+                    '🌐 هيئة الدواء المصرية',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.black87,
+                        ),
+                  ),
+                  trailing: TextButton(
+                    onPressed: () => _launchURL('https://edaegypt.gov.eg/'),
                     child: Text(
                       'زيارة',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(

@@ -690,7 +690,7 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> with RouteAware
                                             fontStyle: FontStyle.italic,
                                           ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 12),
                                     _analysisImages.isEmpty
                                         ? Center(
                                             child: Text(
@@ -718,11 +718,11 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> with RouteAware
                                               debugPrint('Rendering analysis with ID: $analysisId, Description: $description');
 
                                               return Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                padding: const EdgeInsets.symmetric(vertical: 12.0),
                                                 child: Card(
-                                                  elevation: 4,
+                                                  elevation: 6,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(12),
+                                                    borderRadius: BorderRadius.circular(16),
                                                   ),
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,14 +741,17 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> with RouteAware
                                                                 );
                                                               },
                                                         child: ClipRRect(
-                                                          borderRadius: BorderRadius.circular(8),
+                                                          borderRadius: const BorderRadius.only(
+                                                            topLeft: Radius.circular(16),
+                                                            topRight: Radius.circular(16),
+                                                          ),
                                                           child: Image.network(
                                                             'https://diabetesmanagement.pythonanywhere.com$imageUrl',
-                                                            height: 150,
+                                                            height: 200,
                                                             width: double.infinity,
                                                             fit: BoxFit.cover,
                                                             errorBuilder: (context, error, stackTrace) => Container(
-                                                              height: 150,
+                                                              height: 200,
                                                               color: Colors.grey.shade200,
                                                               child: const Center(
                                                                 child: Icon(Icons.broken_image, size: 50, color: Colors.grey),
@@ -757,53 +760,99 @@ class ProfileAndSettingsScreenState extends State<ProfileScreen> with RouteAware
                                                           ),
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 8),
                                                       Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                        child: IconButton(
-                                                          icon: const Icon(Icons.delete, color: Colors.red, size: 24),
-                                                          tooltip: 'حذف التحليل',
-                                                          onPressed: analysisId == 0
-                                                              ? null
-                                                              : () async {
-                                                                  final bool? confirm = await _showDeleteConfirmationDialog(analysisId);
-                                                                  if (confirm == true) {
-                                                                    await _deleteAnalysis(analysisId);
-                                                                  }
-                                                                },
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                        child: Text(
-                                                          'الوصف: $description',
-                                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Colors.black87,
-                                                                fontFamily: 'Cairo',
+                                                        padding: const EdgeInsets.all(12.0),
+                                                        child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Expanded(
+                                                              child: Text(
+                                                                'تاريخ الرفع: $formattedDate',
+                                                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                      color: Colors.grey[700],
+                                                                      fontFamily: 'Cairo',
+                                                                      fontWeight: FontWeight.w600,
+                                                                    ),
                                                               ),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                        child: Text(
-                                                          'تاريخ الرفع: $formattedDate',
-                                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: Colors.grey[600],
-                                                                fontFamily: 'Cairo',
-                                                              ),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                                        child: Text(
-                                                          'توصية الدكتور: $comment',
-                                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: comment == 'لا يوجد توصية' ? Colors.grey[600] : Colors.black87,
-                                                                fontFamily: 'Cairo',
-                                                              ),
+                                                            ),
+                                                            IconButton(
+                                                              icon: const Icon(Icons.delete, color: Colors.red, size: 28),
+                                                              tooltip: 'حذف التحليل',
+                                                              onPressed: analysisId == 0
+                                                                  ? null
+                                                                  : () async {
+                                                                      final bool? confirm = await _showDeleteConfirmationDialog(analysisId);
+                                                                      if (confirm == true) {
+                                                                        await _deleteAnalysis(analysisId);
+                                                                      }
+                                                                    },
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                       const SizedBox(height: 8),
+                                                      Container(
+                                                        margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                                        padding: const EdgeInsets.all(12.0),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.teal.shade50,
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.teal.shade200, width: 1.5),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              'الوصف',
+                                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                                    color: Colors.teal.shade800,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontFamily: 'Cairo',
+                                                                  ),
+                                                            ),
+                                                            const SizedBox(height: 4),
+                                                            Text(
+                                                              description,
+                                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: Colors.black87,
+                                                                    fontFamily: 'Cairo',
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 12),
+                                                      Container(
+                                                        margin: const EdgeInsets.symmetric(horizontal: 12.0),
+                                                        padding: const EdgeInsets.all(12.0),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.blue.shade50,
+                                                          borderRadius: BorderRadius.circular(12),
+                                                          border: Border.all(color: Colors.blue.shade200, width: 1.5),
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              'توصية الدكتور',
+                                                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                                    color: Colors.blue.shade800,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontFamily: 'Cairo',
+                                                                  ),
+                                                            ),
+                                                            const SizedBox(height: 4),
+                                                            Text(
+                                                              comment,
+                                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                                    color: comment == 'لا يوجد توصية' ? Colors.grey[600] : Colors.black87,
+                                                                    fontFamily: 'Cairo',
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 12),
                                                     ],
                                                   ),
                                                 ),

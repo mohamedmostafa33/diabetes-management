@@ -233,17 +233,32 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
   Future<void> _pickImage() async {
     PermissionStatus status;
 
+    // تسجيل إصدار Android
+    print('Android API Level: ${Platform.version}');
+
     if (Platform.isAndroid) {
-      // لإصدارات Android 13 وأحدث (API 33+)
       if (Platform.version.contains('API 33') || Platform.version.contains('API 34')) {
-        status = await Permission.photos.request();
+        status = await Permission.photos.status;
+        print('Photos permission status: $status');
+        if (!status.isGranted) {
+          status = await Permission.photos.request();
+          print('Photos permission after request: $status');
+        }
       } else {
-        // لإصدارات Android 12 وأقدم (مثل Android 11)
-        status = await Permission.storage.request();
+        status = await Permission.storage.status;
+        print('Storage permission status: $status');
+        if (!status.isGranted) {
+          status = await Permission.storage.request();
+          print('Storage permission after request: $status');
+        }
       }
     } else {
-      // لنظام iOS
-      status = await Permission.photos.request();
+      status = await Permission.photos.status;
+      print('iOS Photos permission status: $status');
+      if (!status.isGranted) {
+        status = await Permission.photos.request();
+        print('iOS Photos permission after request: $status');
+      }
     }
 
     if (status.isGranted) {
@@ -258,24 +273,36 @@ class GlucoseTrackingScreenState extends State<GlucoseTrackingScreen> {
           _selectedImage = File(pickedFile.path);
           _isUploading = false;
         });
+        print('Image picked: ${pickedFile.path}');
       } else {
         setState(() {
           _isUploading = false;
         });
+        if (mounted) {
+          _showSnackBar('لم يتم اختيار صورة.', Colors.red);
+        }
+        print('No image selected');
       }
     } else if (status.isDenied) {
       if (mounted) {
         _showSnackBar('يرجى منح إذن الوصول إلى الصور!', Colors.red);
       }
+      print('Permission denied');
     } else if (status.isPermanentlyDenied) {
       if (mounted) {
         _showSnackBar('تم رفض الإذن بشكل دائم. يرجى تفعيله من إعدادات التطبيق.', Colors.red);
       }
       await openAppSettings();
+      print('Permission permanently denied');
+    } else {
+      if (mounted) {
+        _showSnackBar('حالة الإذن غير معروفة: $status', Colors.red);
+      }
+      print('Unknown permission status: $status');
     }
   }
 
-  void _cancelImage() {
+  Future<void> _cancelImage() async {
     setState(() {
       _selectedImage = null;
       _descriptionController.clear();

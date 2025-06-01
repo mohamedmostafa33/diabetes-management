@@ -38,7 +38,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
         throw Exception('فشل في الاتصال: الرجاء تسجيل الدخول مرة أخرى');
       }
 
-      print('Drug suggestions raw response: ${response.body}'); // للتحقق من البيانات الخام
+      print('Drug suggestions raw response: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -77,7 +77,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
         return;
       }
 
-      print('Alternative medications raw response: ${response.body}'); // للتحقق من البيانات الخام
+      print('Alternative medications raw response: ${response.body}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> result = jsonDecode(utf8.decode(response.bodyBytes));
@@ -108,14 +108,18 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                       size: 30,
                     ),
                     SizedBox(width: 10),
-                    Text(
-                      'يرجى اتباع تعليمات الدكتور وإعلامه بالدواء',
-                      style: TextStyle(color: Colors.white),
+                    Expanded(
+                      child: Text(
+                        'يرجى اتباع تعليمات الدكتور وإعلامه بالدواء',
+                        style: TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+                      ),
                     ),
                   ],
                 ),
                 backgroundColor: Colors.redAccent,
-                duration: const Duration(seconds: 7),
+                duration: const Duration(seconds: 50),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
             );
           }
@@ -144,10 +148,11 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
         appBar: AppBar(
           title: Text(
             'الأدوية البديلة',
-            style: Theme.of(context)
-                .textTheme
-                .headlineMedium
-                ?.copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Cairo',
+                ),
           ),
           centerTitle: true,
           flexibleSpace: Container(
@@ -155,6 +160,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
               gradient: AppTheme.appBarGradient,
             ),
           ),
+          elevation: 4,
         ),
         body: Container(
           decoration: const BoxDecoration(
@@ -162,6 +168,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
           ),
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
@@ -175,12 +182,15 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                           decoration: InputDecoration(
                             hintText: 'أدخل اسم الدواء الأساسي...',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
                             filled: true,
                             fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            hintStyle: const TextStyle(fontFamily: 'Cairo', color: Colors.grey),
                           ),
                           textDirection: TextDirection.rtl,
+                          style: const TextStyle(fontFamily: 'Cairo'),
                         );
                       },
                       suggestionsCallback: (pattern) async {
@@ -192,6 +202,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                           title: Text(
                             suggestion,
                             textDirection: TextDirection.rtl,
+                            style: const TextStyle(fontFamily: 'Cairo'),
                           ),
                         );
                       },
@@ -201,7 +212,7 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                       },
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: isLoading
                         ? null
@@ -213,8 +224,16 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
                     ),
-                    child: const Text('بحث'),
+                    child: const Text(
+                      'بحث',
+                      style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -223,231 +242,180 @@ class AlternativeMedicationsScreenState extends State<AlternativeMedicationsScre
                 const Center(child: CircularProgressIndicator()),
               if (errorMessage != null)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: Text(
                     errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.w600,
+                    ),
                     textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               if (showAlternativeText && filteredMedications.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 10.0),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
                   child: Text(
                     'الأدوية البديلة للدواء المدخل',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal,
-                    ),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Colors.teal.shade800,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
                     textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                const SizedBox(height: 10),
               ],
               Expanded(
                 child: showAlternativeText && filteredMedications.isNotEmpty
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SingleChildScrollView(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                            decoration: BoxDecoration(
-                              color: Colors.cyan[50],
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromRGBO(158, 158, 158, 0.3),
-                                  spreadRadius: 2,
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: DataTable(
-                              dividerThickness: 1.5,
-                              dataRowMinHeight: 50,
-                              dataRowMaxHeight: 50,
-                              columnSpacing: 15,
-                              decoration: BoxDecoration(
-                                color: Colors.cyan[50],
-                                border: Border.all(color: Colors.grey.shade400),
-                                borderRadius: BorderRadius.circular(12.0),
+                    ? ListView.builder(
+                        itemCount: filteredMedications.length,
+                        itemBuilder: (context, index) {
+                          final med = filteredMedications[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Card(
+                              elevation: 6,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              border: TableBorder(
-                                verticalInside: BorderSide(
-                                  width: 1.5,
-                                  color: Colors.grey.shade400,
-                                ),
-                                horizontalInside: BorderSide(
-                                  width: 1.5,
-                                  color: Colors.grey.shade400,
-                                ),
-                              ),
-                              columns: const [
-                                DataColumn(
-                                  label: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                    child: Text(
-                                      'الرقم',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        letterSpacing: 0.5,
-                                        wordSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                    child: Text(
-                                      'اسم الدواء',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        letterSpacing: 0.5,
-                                        wordSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                    child: Text(
-                                      'الوصف',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        letterSpacing: 0.5,
-                                        wordSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                    child: Text(
-                                      'الأثر الجانبي',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        letterSpacing: 0.5,
-                                        wordSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                                    child: Text(
-                                      'طريقة الاستخدام',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        letterSpacing: 0.5,
-                                        wordSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: filteredMedications.asMap().entries.map((entry) {
-                                int index = entry.key + 1;
-                                Map<String, String> med = entry.value;
-                                return DataRow(
-                                  color: WidgetStateProperty.resolveWith<Color?>(
-                                    (Set<WidgetState> states) {
-                                      return index % 2 == 0 ? Colors.white : Colors.cyan[50];
-                                    },
-                                  ),
-                                  cells: [
-                                    DataCell(
-                                      Text(
-                                        '$index',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                          letterSpacing: 0.3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'الدواء ${index + 1}: ${med['name']}',
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                  color: Colors.teal.shade900,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
                                         ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Container(
+                                      padding: const EdgeInsets.all(12.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.teal.shade50,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.teal.shade200, width: 1.5),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'الوصف:',
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  color: Colors.teal.shade800,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            med['description']!,
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.black87,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    DataCell(
-                                      Text(
-                                        med['name']!,
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color.fromARGB(221, 194, 31, 31),
-                                          letterSpacing: 0.3,
-                                        ),
+                                    const SizedBox(height: 12),
+                                    Container(
+                                      padding: const EdgeInsets.all(12.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.shade50,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.red.shade200, width: 1.5),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'الآثار الجانبية:',
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  color: Colors.red.shade800,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            med['sideEffect']!,
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.black87,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    DataCell(
-                                      Text(
-                                        med['description']!,
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                          letterSpacing: 0.3,
-                                        ),
+                                    const SizedBox(height: 12),
+                                    Container(
+                                      padding: const EdgeInsets.all(12.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.shade50,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.blue.shade200, width: 1.5),
                                       ),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        med['sideEffect']!,
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                          letterSpacing: 0.3,
-                                        ),
-                                      ),
-                                    ),
-                                    DataCell(
-                                      Text(
-                                        med['howToUse']!,
-                                        textAlign: TextAlign.center,
-                                        textDirection: TextDirection.rtl,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black87,
-                                          letterSpacing: 0.3,
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'طريقة الاستخدام:',
+                                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                  color: Colors.blue.shade800,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            med['howToUse']!,
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Colors.black87,
+                                                  fontFamily: 'Cairo',
+                                                ),
+                                            textDirection: TextDirection.rtl,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
-                                );
-                              }).toList(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       )
-                    : const SizedBox.shrink(),
+                    : const Center(
+                        child: Text(
+                          'ابحث عن دواء لعرض البدائل',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                            fontFamily: 'Cairo',
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textDirection: TextDirection.rtl,
+                        ),
+                      ),
               ),
             ],
           ),

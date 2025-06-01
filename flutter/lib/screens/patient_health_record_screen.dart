@@ -172,7 +172,7 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
 
       if (response.statusCode == 200) {
         _showSnackBar('تم إضافة التعليق بنجاح!', Colors.green);
-        await _fetchPatientHealthRecord(); // Refresh data to update the table
+        await _fetchPatientHealthRecord(); // Refresh data to update the UI
       } else {
         final responseData = jsonDecode(response.body);
         _showSnackBar(responseData['error'] ?? 'فشل في إضافة التعليق!', Colors.red);
@@ -189,11 +189,16 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
       SnackBar(
         content: Text(
           message,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white,
+                fontFamily: 'Cairo',
+              ),
         ),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: const EdgeInsets.all(10),
+        elevation: 6,
       ),
     );
   }
@@ -203,21 +208,42 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('إضافة تعليق'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        title: Text(
+          'إضافة تعليق',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Colors.teal.shade800,
+                fontFamily: 'Cairo',
+                fontWeight: FontWeight.bold,
+              ),
+        ),
         content: TextField(
           controller: commentController,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'اكتب تعليقك هنا',
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            filled: true,
+            fillColor: Colors.teal.shade50,
+            labelStyle: const TextStyle(fontFamily: 'Cairo'),
           ),
           maxLines: 3,
+          style: const TextStyle(fontFamily: 'Cairo'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(
+              'إلغاء',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                    fontFamily: 'Cairo',
+                  ),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               if (commentController.text.trim().isEmpty) {
                 _showSnackBar('التعليق لا يمكن أن يكون فارغًا', Colors.red);
@@ -226,7 +252,20 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
               Navigator.pop(context);
               _addCommentToAnalysis(analysisId, commentController.text.trim());
             },
-            child: const Text('إرسال', style: TextStyle(color: Colors.teal)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.teal,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'إرسال',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
           ),
         ],
       ),
@@ -339,23 +378,25 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
 
   Widget _buildHealthRecordItem(BuildContext context, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal[800],
+                  color: Colors.teal.shade900,
+                  fontFamily: 'Cairo',
                 ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black87,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey.shade800,
                   fontSize: 16,
+                  fontFamily: 'Cairo',
                 ),
           ),
         ],
@@ -368,20 +409,30 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: AppBar(
-        title: const Text('السجل المرضي'),
+        title: const Text(
+          'السجل المرضي',
+          style: TextStyle(
+            fontFamily: 'Cairo',
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 22,
+          ),
+        ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: AppTheme.appBarGradient,
           ),
         ),
+        elevation: 8,
+        shadowColor: Colors.teal.withOpacity(0.3),
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: AppTheme.backgroundGradient,
         ),
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: Colors.teal))
             : _errorMessage != null
                 ? Center(
                     child: Column(
@@ -389,24 +440,34 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                       children: [
                         Text(
                           _errorMessage!,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.red,
-                                fontSize: 16,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: Colors.red.shade700,
+                                fontSize: 18,
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.w600,
                               ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: _loadTokenAndFetchData,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
+                            backgroundColor: Colors.teal.shade600,
+                            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            elevation: 6,
+                            shadowColor: Colors.teal.withOpacity(0.4),
                           ),
                           child: const Text(
                             'إعادة المحاولة',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ],
@@ -416,30 +477,42 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                     ? Center(
                         child: Text(
                           'لا يوجد سجل مرضي متاح',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontSize: 18,
+                                fontFamily: 'Cairo',
+                                color: Colors.grey.shade600,
+                                fontStyle: FontStyle.italic,
+                              ),
                         ),
                       )
                     : ListView(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(20.0),
                         children: [
                           Card(
-                            elevation: 4,
+                            elevation: 8,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            margin: const EdgeInsets.only(bottom: 16.0),
+                            margin: const EdgeInsets.only(bottom: 20.0),
                             child: Container(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(20.0),
                               decoration: BoxDecoration(
-                                color: Colors.teal[50],
-                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.teal.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _buildHealthRecordItem(
                                     context,
-                                    'الاسم الكامل',
+                                    'اسم المريض ',
                                     _healthRecord!['full_name'] ?? 'غير متوفر',
                                   ),
                                 ],
@@ -448,56 +521,79 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                           ),
                           const Divider(
                             color: Colors.teal,
-                            thickness: 1.0,
+                            thickness: 2,
+                            indent: 20,
+                            endIndent: 20,
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           Text(
                             'سجل مستوي السكر في الدم',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w900,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: Colors.teal.shade900,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cairo',
+                                  fontSize: 22,
                                 ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           Card(
-                            elevation: 4,
+                            elevation: 8,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Container(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(20.0),
                               decoration: BoxDecoration(
-                                color: Colors.teal[50],
-                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.teal.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: DataTable(
                                   border: TableBorder(
-                                    horizontalInside: BorderSide(width: 1, color: Colors.grey.shade300),
-                                    verticalInside: BorderSide(width: 1, color: Colors.grey.shade300),
-                                    top: BorderSide(width: 1, color: Colors.grey.shade300),
-                                    bottom: BorderSide(width: 1, color: Colors.grey.shade300),
-                                    left: BorderSide(width: 1, color: Colors.grey.shade300),
-                                    right: BorderSide(width: 1, color: Colors.grey.shade300),
+                                    horizontalInside: BorderSide(width: 1, color: Colors.grey.shade200),
+                                    verticalInside: BorderSide(width: 1, color: Colors.grey.shade200),
+                                    top: BorderSide(width: 1, color: Colors.grey.shade200),
+                                    bottom: BorderSide(width: 1, color: Colors.grey.shade200),
+                                    left: BorderSide(width: 1, color: Colors.grey.shade200),
+                                    right: BorderSide(width: 1, color: Colors.grey.shade200),
                                   ),
-                                  columns: const [
+                                  columns: [
                                     DataColumn(
                                       label: Text(
                                         'نوع القياس',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Cairo',
+                                              color: Colors.teal.shade900,
+                                            ),
                                       ),
                                     ),
                                     DataColumn(
                                       label: Text(
                                         'مستوي السكر',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Cairo',
+                                              color: Colors.teal.shade900,
+                                            ),
                                       ),
                                     ),
                                     DataColumn(
                                       label: Text(
                                         'التوقيت',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Cairo',
+                                              color: Colors.teal.shade900,
+                                            ),
                                       ),
                                     ),
                                   ],
@@ -508,8 +604,9 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                                           Text(
                                             record['type'] ?? '',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Colors.black87,
+                                                  color: Colors.grey.shade800,
                                                   fontSize: 16,
+                                                  fontFamily: 'Cairo',
                                                 ),
                                           ),
                                         ),
@@ -517,8 +614,9 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                                           Text(
                                             record['value'] ?? '',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Colors.black87,
+                                                  color: Colors.grey.shade800,
                                                   fontSize: 16,
+                                                  fontFamily: 'Cairo',
                                                 ),
                                           ),
                                         ),
@@ -530,15 +628,17 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                                               Text(
                                                 record['date'] ?? '',
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                      color: Colors.black87,
+                                                      color: Colors.grey.shade800,
                                                       fontSize: 16,
+                                                      fontFamily: 'Cairo',
                                                     ),
                                               ),
                                               Text(
                                                 record['time'] ?? '',
                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                      color: Colors.black87,
+                                                      color: Colors.grey.shade800,
                                                       fontSize: 16,
+                                                      fontFamily: 'Cairo',
                                                     ),
                                               ),
                                             ],
@@ -547,204 +647,257 @@ class PatientHealthRecordScreenState extends State<PatientHealthRecordScreen> wi
                                       ],
                                     );
                                   }).toList(),
-                                  columnSpacing: 20,
-                                  dataRowMinHeight: 50,
-                                  dataRowMaxHeight: 70,
+                                  columnSpacing: 24,
+                                  dataRowMinHeight: 60,
+                                  dataRowMaxHeight: 80,
                                   headingRowColor: WidgetStateProperty.all(Colors.teal.shade100),
-                                  dividerThickness: 1,
+                                  dividerThickness: 1.5,
                                   showBottomBorder: true,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 20),
                           const Divider(
                             color: Colors.teal,
-                            thickness: 1.0,
+                            thickness: 2,
+                            indent: 20,
+                            endIndent: 20,
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           Text(
                             'تحاليل السكر',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.w900,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: Colors.teal.shade900,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cairo',
+                                  fontSize: 22,
                                 ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 12),
                           Text(
-                            'اضغط على الأيقونة لعرض صورة التحليل',
+                            'اضغط على الصورة لعرضها بالكامل أو على أيقونة التعليق لإضافة توصية',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.grey[600],
+                                  color: Colors.grey.shade600,
                                   fontStyle: FontStyle.italic,
+                                  fontFamily: 'Cairo',
                                 ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 16),
                           _healthRecord!['analysis'].isEmpty
                               ? Center(
                                   child: Text(
                                     'لا توجد تحاليل متاحة',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Colors.grey[600],
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: Colors.grey.shade600,
                                           fontStyle: FontStyle.italic,
+                                          fontFamily: 'Cairo',
+                                          fontSize: 16,
                                         ),
                                   ),
                                 )
-                              : Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16.0),
-                                    decoration: BoxDecoration(
-                                      color: Colors.teal[50],
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: RepaintBoundary(
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: DataTable(
-                                          border: TableBorder(
-                                            horizontalInside: BorderSide(width: 1, color: Colors.grey.shade300),
-                                            verticalInside: BorderSide(width: 1, color: Colors.grey.shade300),
-                                            top: BorderSide(width: 1, color: Colors.grey.shade300),
-                                            bottom: BorderSide(width: 1, color: Colors.grey.shade300),
-                                            left: BorderSide(width: 1, color: Colors.grey.shade300),
-                                            right: BorderSide(width: 1, color: Colors.grey.shade300),
-                                          ),
-                                          columns: const [
-                                            DataColumn(
-                                              label: Text(
-                                                'تحليل السكر',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'الوصف',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'تاريخ الرفع',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'تعليق الدكتور',
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                          ],
-                                          rows: _healthRecord!['analysis'].map<DataRow>((imageData) {
-                                            final int analysisId = imageData['id'] ?? 0;
-                                            final String imageUrl = imageData['image'] ?? '';
-                                            final String description = imageData['description'] ?? 'بدون وصف';
-                                            final String comment = imageData['comment'] ?? 'لا يوجد تعليق';
-                                            final String uploadedAt = imageData['uploaded_at'] ?? DateTime.now().toString();
-                                            DateTime uploadDate;
-                                            try {
-                                              uploadDate = DateTime.parse(uploadedAt);
-                                            } catch (e) {
-                                              debugPrint('Error parsing uploaded_at: $e');
-                                              uploadDate = DateTime.now();
-                                            }
-                                            final String formattedDate = DateFormat('yyyy-MM-dd').format(uploadDate);
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _healthRecord!['analysis'].length,
+                                  itemBuilder: (context, index) {
+                                    final imageData = _healthRecord!['analysis'][index];
+                                    final int analysisId = imageData['id'] ?? 0;
+                                    final String imageUrl = imageData['image'] ?? '';
+                                    final String description = imageData['description'] ?? 'بدون وصف';
+                                    final String comment = imageData['comment'] ?? 'لا يوجد تعليق';
+                                    final String uploadedAt = imageData['uploaded_at'] ?? DateTime.now().toString();
+                                    DateTime uploadDate;
+                                    try {
+                                      uploadDate = DateTime.parse(uploadedAt);
+                                    } catch (e) {
+                                      debugPrint('Error parsing uploaded_at: $e');
+                                      uploadDate = DateTime.now();
+                                    }
+                                    final String formattedDate = DateFormat('yyyy-MM-dd').format(uploadDate);
 
-                                            return DataRow(
-                                              cells: [
-                                                DataCell(
-                                                  GestureDetector(
-                                                    onTap: imageUrl.isEmpty || kIsWeb
-                                                        ? null
-                                                        : () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (context) => FullImageScreen(
-                                                                  imageUrl: 'https://diabetesmanagement.pythonanywhere.com$imageUrl',
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                    child: Container(
-                                                      height: 45,
-                                                      width: 45,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.teal.shade100,
-                                                        borderRadius: BorderRadius.circular(8),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: Colors.black12,
-                                                            blurRadius: 4,
-                                                            offset: const Offset(2, 2),
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                      child: Card(
+                                        elevation: 8,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: imageUrl.isEmpty || kIsWeb
+                                                  ? null
+                                                  : () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) => FullImageScreen(
+                                                            imageUrl: 'https://diabetesmanagement.pythonanywhere.com$imageUrl',
                                                           ),
-                                                        ],
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.image,
-                                                        size: 35,
-                                                        color: imageUrl.isEmpty || kIsWeb ? Colors.grey : Colors.teal.shade800,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    description,
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                          color: Colors.black87,
-                                                          fontSize: 16,
                                                         ),
-                                                  ),
+                                                      );
+                                                    },
+                                              child: ClipRRect(
+                                                borderRadius: const BorderRadius.only(
+                                                  topLeft: Radius.circular(20),
+                                                  topRight: Radius.circular(20),
                                                 ),
-                                                DataCell(
-                                                  Text(
-                                                    formattedDate,
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                          color: Colors.black87,
-                                                          fontSize: 16,
+                                                child: imageUrl.isEmpty || kIsWeb
+                                                    ? Container(
+                                                        height: 200,
+                                                        color: Colors.grey.shade100,
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons.broken_image,
+                                                            size: 50,
+                                                            color: Colors.grey.shade400,
+                                                          ),
                                                         ),
-                                                  ),
-                                                ),
-                                                DataCell(
+                                                      )
+                                                    : Image.network(
+                                                        'https://diabetesmanagement.pythonanywhere.com$imageUrl',
+                                                        height: 200,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        loadingBuilder: (context, child, loadingProgress) {
+                                                          if (loadingProgress == null) return child;
+                                                          return Container(
+                                                            height: 200,
+                                                            color: Colors.grey.shade100,
+                                                            child: Center(
+                                                              child: CircularProgressIndicator(
+                                                                value: loadingProgress.expectedTotalBytes != null
+                                                                    ? loadingProgress.cumulativeBytesLoaded /
+                                                                        (loadingProgress.expectedTotalBytes ?? 1)
+                                                                    : null,
+                                                                color: Colors.teal,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                        errorBuilder: (context, error, stackTrace) => Container(
+                                                          height: 200,
+                                                          color: Colors.grey.shade100,
+                                                          child: Center(
+                                                            child: Icon(
+                                                              Icons.broken_image,
+                                                              size: 50,
+                                                              color: Colors.grey.shade400,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(16.0),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
                                                   Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       Expanded(
                                                         child: Text(
-                                                          comment,
+                                                          'تاريخ الرفع: $formattedDate',
                                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: comment == 'لا يوجد توصية' ? Colors.grey[600] : Colors.black87,
-                                                                fontSize: 16,
+                                                                color: Colors.grey.shade700,
+                                                                fontFamily: 'Cairo',
+                                                                fontWeight: FontWeight.w600,
+                                                                fontSize: 14,
                                                               ),
                                                         ),
                                                       ),
                                                       IconButton(
-                                                        icon: const Icon(Icons.comment, color: Colors.teal),
-                                                        tooltip: 'إرسال توصية ',
+                                                        icon: Icon(
+                                                          Icons.comment,
+                                                          color: Colors.teal.shade700,
+                                                          size: 30,
+                                                        ),
+                                                        tooltip: 'إضافة تعليق',
                                                         onPressed: () {
                                                           _showCommentDialog(analysisId);
                                                         },
                                                       ),
                                                     ],
                                                   ),
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
-                                          columnSpacing: 20,
-                                          dataRowMinHeight: 50,
-                                          dataRowMaxHeight: 70,
-                                          headingRowColor: WidgetStateProperty.all(Colors.teal.shade100),
-                                          dividerThickness: 1,
-                                          showBottomBorder: true,
+                                                  const SizedBox(height: 16),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(16.0),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.teal.shade50,
+                                                      borderRadius: BorderRadius.circular(12),
+                                                      border: Border.all(color: Colors.teal.shade200, width: 1.5),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          'وصف المريض',
+                                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                                color: Colors.teal.shade900,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontFamily: 'Cairo',
+                                                              ),
+                                                        ),
+                                                        const SizedBox(height: 8),
+                                                        Text(
+                                                          description,
+                                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                color: Colors.grey.shade800,
+                                                                fontFamily: 'Cairo',
+                                                                fontSize: 16,
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(16.0),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue.shade50,
+                                                      borderRadius: BorderRadius.circular(12),
+                                                      border: Border.all(color: Colors.blue.shade200, width: 1.5),
+                                                    ),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          'تعليق الدكتور',
+                                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                                                color: Colors.blue.shade900,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontFamily: 'Cairo',
+                                                              ),
+                                                        ),
+                                                        const SizedBox(height: 8),
+                                                        Text(
+                                                          comment,
+                                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                color: comment == 'لا يوجد تعليق'
+                                                                    ? Colors.grey.shade600
+                                                                    : Colors.grey.shade800,
+                                                                fontFamily: 'Cairo',
+                                                                fontSize: 16,
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ),
                         ],
                       ),

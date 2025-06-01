@@ -29,24 +29,26 @@ class LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loadSavedCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool rememberMe = prefs.getBool('remember_me') ?? false;
-    if (rememberMe) {
-      setState(() {
-        _emailController.text = prefs.getString('saved_email') ?? '';
+    setState(() {
+      _emailController.text = prefs.getString('saved_email') ?? '';
+      bool rememberMe = prefs.getBool('remember_me') ?? false;
+      if (rememberMe) {
         _passwordController.text = prefs.getString('saved_password') ?? '';
         _rememberMe = true;
-      });
-    }
+      }
+    });
   }
 
   Future<void> _saveCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // حفظ الإيميل دائمًا
+    await prefs.setString('saved_email', _emailController.text.trim());
+    
+    // حفظ كلمة المرور فقط إذا تم تفعيل "تذكرني"
     if (_rememberMe) {
-      await prefs.setString('saved_email', _emailController.text.trim());
       await prefs.setString('saved_password', _passwordController.text.trim());
       await prefs.setBool('remember_me', true);
     } else {
-      await prefs.remove('saved_email');
       await prefs.remove('saved_password');
       await prefs.setBool('remember_me', false);
     }

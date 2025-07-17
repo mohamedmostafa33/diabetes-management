@@ -44,34 +44,34 @@ The app provides real-time health tracking, personalized reminders, emergency al
 ## 📸 Project Screenshots
 
 ### 🔐 Account Type Selection
-![Account Type](screenshots/account_type.png)
+<img src="screenshots/account_type.png" width="200"/>
 
 ### 🧪 Diabetes Prediction Screen
-![Prediction](screenshots/predection.png)
+<img src="screenshots/predection.png" width="200"/>
 
 ### 💊 Alternative Medicines
-![Alternative Medicines](screenshots/alternative_medicines.png)
+<img src="screenshots/alternative_medicines.png" width="200"/>
 
 ### 🧠 Recommendations
-![Recommendations](screenshots/recommendations.png)
+<img src="screenshots/recommendations.png" width="200"/>
 
 ### 📅 Dashboard
-![Dashboard](screenshots/dashboard.png)
+<img src="screenshots/dashboard.png" width="200"/>
 
 ### ⏰ Reminders Screen
-![Reminders](screenshots/reminders.png)
+<img src="screenshots/reminders.png" width="200"/>
 
 ### 👤 Profile Screen (Patient)
-![Profile](screenshots/profile.png)
+<img src="screenshots/profile.png" width="200"/>
 
 ### 🔍 Doctor Search
-![Doctor Search](screenshots/doctor_search.png)
+<img src="screenshots/doctor_search.png" width="200"/>
 
 ### 🧑‍⚕️ Patient Follow-Up (Doctor View)
-![Patient Follow](screenshots/patient_follow.png)
+<img src="screenshots/patient_follow.png" width="200"/>
 
 ### 🔑 Login
-![Login](screenshots/login.png)
+<img src="screenshots/login.png" width="200"/>
 
 ### 📝 Register
-![Register](screenshots/register.png)
+<img src="screenshots/register.png" width="200"/>

@@ -43,35 +43,37 @@ The app provides real-time health tracking, personalized reminders, emergency al
 
 ## 📸 Project Screenshots
 
-### 🔐 Account Type Selection
-<img src="screenshots/account_type.png" width="200"/>
+### 🔐 Account & Auth Screens
+<p float="left">
+  <img src="screenshots/account_type.png" width="200"/>
+  <img src="screenshots/login.png" width="200"/>
+  <img src="screenshots/register.png" width="200"/>
+</p>
 
-### 🧪 Diabetes Prediction Screen
-<img src="screenshots/predection.png" width="200"/>
-
-### 💊 Alternative Medicines
-<img src="screenshots/alternative_medicines.png" width="200"/>
-
-### 🧠 Recommendations
-<img src="screenshots/recommendations.png" width="200"/>
-
-### 📅 Dashboard
+### 📅 Dashboard Screen
 <img src="screenshots/dashboard.png" width="200"/>
 
-### ⏰ Reminders Screen
-<img src="screenshots/reminders.png" width="200"/>
+### 📊 Profile & Daily Reminders Screens
+<p float="left">
+  <img src="screenshots/profile.png" width="200"/>
+  <img src="screenshots/reminders.png" width="200"/>
+</p>
 
-### 👤 Profile Screen (Patient)
-<img src="screenshots/profile.png" width="200"/>
+### 🤖 AI Features
+<p float="left">
+  <img src="screenshots/predection.png" width="200"/>
+  <img src="screenshots/alternative_medicines.png" width="200"/>
+</p>
 
-### 🔍 Doctor Search
-<img src="screenshots/doctor_search.png" width="200"/>
+### 🩺 Doctor Features
+<p float="left">
+  <img src="screenshots/doctor_search.png" width="200"/>
+  <img src="screenshots/patient_follow.png" width="200"/>
+</p>
 
-### 🧑‍⚕️ Patient Follow-Up (Doctor View)
-<img src="screenshots/patient_follow.png" width="200"/>
+### 🧠 Recommendations
+<p float="left">
+  <img src="screenshots/recommendations.png" width="200"/>
+</p>
 
-### 🔑 Login
-<img src="screenshots/login.png" width="200"/>
 
-### 📝 Register
-<img src="screenshots/register.png" width="200"/>

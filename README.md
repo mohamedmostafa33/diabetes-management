@@ -19,7 +19,7 @@ The app provides real-time health tracking, personalized reminders, emergency al
   - View real-time health updates  
   - Send personalized advice or guidance based on the patient's condition
 
-* **🤖 AI-Powered Predictions**
+* **🤖 AI-Powered Features**
   
   Advanced machine learning models support two key features:
   

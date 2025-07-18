@@ -45,35 +45,35 @@ The app provides real-time health tracking, personalized reminders, emergency al
 
 ### 🔐 Account & Auth Screens
 <p float="left">
-  <img src="screenshots/account_type.png" width="200"/>
-  <img src="screenshots/login.png" width="200"/>
-  <img src="screenshots/register.png" width="200"/>
+  <img src="flutter/assets/screenshots/account_type.png" width="200"/>
+  <img src="flutter/assets/screenshots/login.png" width="200"/>
+  <img src="flutter/assets/screenshots/register.png" width="200"/>
 </p>
 
 ### 📅 Dashboard Screen
-<img src="screenshots/dashboard.png" width="200"/>
+<img src="flutter/assets/screenshots/dashboard.png" width="200"/>
 
 ### 📊 Profile & Daily Reminders Screens
 <p float="left">
-  <img src="screenshots/profile.png" width="200"/>
-  <img src="screenshots/reminders.png" width="200"/>
+  <img src="flutter/assets/screenshots/profile.png" width="200"/>
+  <img src="flutter/assets/screenshots/reminders.png" width="200"/>
 </p>
 
 ### 🤖 AI Features
 <p float="left">
-  <img src="screenshots/predection.png" width="200"/>
-  <img src="screenshots/alternative_medicines.png" width="200"/>
+  <img src="flutter/assets/screenshots/predection.png" width="200"/>
+  <img src="flutter/assets/screenshots/alternative_medicines.png" width="200"/>
 </p>
 
 ### 🩺 Doctor Features
 <p float="left">
-  <img src="screenshots/doctor_search.png" width="200"/>
-  <img src="screenshots/patient_follow.png" width="200"/>
+  <img src="flutter/assets/screenshots/doctor_search.png" width="200"/>
+  <img src="flutter/assets/screenshots/patient_follow.png" width="200"/>
 </p>
 
 ### 🧠 Recommendations
 <p float="left">
-  <img src="screenshots/recommendations.png" width="200"/>
+  <img src="flutter/assets/screenshots/recommendations.png" width="200"/>
 </p>
 
 

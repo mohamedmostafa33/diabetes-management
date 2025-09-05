@@ -1,24 +1,28 @@
 from django.urls import path
 from .views import (
-    get_profile,
-    update_profile, 
-    search_doctors, 
-    link_patient_to_doctor, 
-    unlink_from_doctor,
-    get_my_patients,
-    get_patient_health_record,
-    get_my_doctor,
-    patient_analysis
+    GetProfile,
+    UpdateProfile,
+    SearchDoctors,
+    LinkPatientToDoctor,
+    UnlinkFromDoctor,
+    GetMyDoctor,
+    GetMyPatients,
+    GetPatientHealthRecord,
+    PatientAnalysis,
+    RespondToPatientRequest,
+    ListPendingRequests
 )
 
 urlpatterns = [
-    path('profile/', get_profile, name='get-profile'),
-    path('update-profile/', update_profile, name="update-profile"),
-    path('search-doctors/', search_doctors, name="search-doctors"),
-    path('link-to-doctor/', link_patient_to_doctor, name="link-to-doctor"),
-    path('unlink-from-doctor/', unlink_from_doctor, name='unlink-from-doctor'),
-    path('my-doctor/', get_my_doctor, name='my-doctors'),
-    path('my-patients/', get_my_patients, name='my-patients'),  
-    path('patient-health-record/<int:patient_id>/', get_patient_health_record, name='patient-health-record'),
-    path('patient-analysis/<int:patient_id>/', patient_analysis, name='patient_analysis'),
+    path('profile/', GetProfile.as_view(), name='get-profile'),
+    path('update-profile/', UpdateProfile.as_view(), name='update-profile'),
+    path('search-doctors/', SearchDoctors.as_view(), name='search-doctors'),
+    path('link-to-doctor/', LinkPatientToDoctor.as_view(), name='link-to-doctor'),
+    path('unlink-from-doctor/', UnlinkFromDoctor.as_view(), name='unlink-from-doctor'),
+    path('my-doctor/', GetMyDoctor.as_view(), name='my-doctor'),
+    path('my-patients/', GetMyPatients.as_view(), name='my-patients'),
+    path('patient-health-record/<int:patient_id>/', GetPatientHealthRecord.as_view(), name='patient-health-record'),
+    path('patient-analysis/<int:patient_id>/', PatientAnalysis.as_view(), name='patient-analysis'),
+    path('respond-to-patient-request/', RespondToPatientRequest.as_view(), name='respond-to-patient-request'),
+    path('list-pending-requests/', ListPendingRequests.as_view(), name='list-pending-requests'),
 ]
